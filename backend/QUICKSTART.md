@@ -49,13 +49,18 @@ pre-commit run --all-files
 ```
 src/
 ├── __init__.py          # настройка логирования
-├── app.py               # маршруты FastAPI
-├── service.py           # бизнес-логика
-├── repositories.py      # доступ к базе данных
-├── models.py            # ORM-модели SQLAlchemy
-├── schemas.py           # Pydantic-схемы
-├── database.py          # настройки базы данных
-└── tasks.py             # задачи Celery
+├── app.py               # re-export для uvicorn
+├── main.py              # create_app(), сборка API
+├── api/                 # роутеры и deps
+├── application/         # сценарии использования
+├── domain/              # константы домена
+├── infrastructure/      # репозитории, storage
+├── repositories.py      # реэкспорт репозиториев
+├── models.py
+├── schemas.py
+├── database.py
+├── config.py
+└── tasks.py
 ```
 
 ## Переменные окружения
@@ -66,16 +71,19 @@ src/
 
 Используйте Swagger UI по адресу `http://localhost:8000/docs` или:
 
+Подставьте свой ключ, если меняли `API_KEY` в `.env.dev`:
+
 ```bash
 # Загрузить файл
 curl -X POST "http://localhost:8000/files" \
   -H "accept: application/json" \
+  -H "X-API-Key: test-key-dev" \
   -F "title=My Document" \
   -F "file=@path/to/file.pdf"
 
 # Получить список файлов
-curl "http://localhost:8000/files"
+curl "http://localhost:8000/files" -H "X-API-Key: test-key-dev"
 
 # Получить список алертов
-curl "http://localhost:8000/alerts"
+curl "http://localhost:8000/alerts" -H "X-API-Key: test-key-dev"
 ```

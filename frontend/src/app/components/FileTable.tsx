@@ -1,5 +1,9 @@
+'use client';
+
+import { useState } from 'react';
 import { Badge, Button, Table } from 'react-bootstrap';
-import { FileItem } from '../api';
+import { downloadFile } from '@/lib/api/filesClient';
+import type { FileItem } from '@/lib/api/types';
 
 interface FileTableProps {
   files: FileItem[];
@@ -41,6 +45,19 @@ function getProcessingVariant(status: string) {
 }
 
 export default function FileTable({ files }: FileTableProps) {
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
+  async function handleDownload(file: FileItem) {
+    setDownloadingId(file.id);
+    try {
+      await downloadFile(file.id, file.original_name);
+    } catch {
+      window.alert('Не удалось скачать файл. Проверьте API и ключ.');
+    } finally {
+      setDownloadingId(null);
+    }
+  }
+
   return (
     <div className="table-responsive">
       <Table hover bordered className="align-middle mb-0">
@@ -91,12 +108,13 @@ export default function FileTable({ files }: FileTableProps) {
                 <td>{formatDate(file.created_at)}</td>
                 <td className="text-nowrap">
                   <Button
-                    as="a"
-                    href={`http://localhost:8000/files/${file.id}/download`}
+                    type="button"
                     variant="outline-primary"
                     size="sm"
+                    disabled={downloadingId === file.id}
+                    onClick={() => void handleDownload(file)}
                   >
-                    Скачать
+                    {downloadingId === file.id ? '…' : 'Скачать'}
                   </Button>
                 </td>
               </tr>

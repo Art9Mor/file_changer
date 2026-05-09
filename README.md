@@ -1,60 +1,68 @@
-# File Changer — MVP файлообменника
+# File Changer
 
-Простой проект для загрузки файлов, проверки их на подозрительный контент и отображения результатов обработки.
+MVP файлообменника: загрузка файлов, фоновая проверка на подозрительные признаки, лента алертов. Стек: **FastAPI** (Python), **Next.js** (React), **PostgreSQL**, **Redis**, **Celery**.
 
-## Что это
-- Название: **File Changer**
-- Назначение: обмен файлами с бэкендом на FastAPI и фронтендом на Next.js
-- Как работает: пользователь загружает файл, сервер сохраняет его, асинхронно проверяет на угрозы и создает алерты для администратора
+## Требования
 
-## Установка зависимостей
-```bash
-cd backend
-pip install -e ".[dev]"
-```
+- Docker и Docker Compose (для контейнерного запуска)
+- Либо локально: Python 3.14+, Node.js 20+, PostgreSQL и Redis
 
 ## Переменные окружения
-Скопируйте пример и заполните значения:
+
+Скопируйте пример в корень репозитория:
+
 ```bash
 cp .env.dev.example .env.dev
 ```
-Заполните `.env.dev` необходимыми значениями, прежде чем запускать приложение.
 
-## Запуск через Docker
+Заполните значения для PostgreSQL, Redis и при необходимости `API_KEY`. Запросы к API требуют заголовок `X-API-Key`, совпадающий с `API_KEY`.
+
+Для фронтенда в браузере при деплое задайте `NEXT_PUBLIC_API_URL` и `NEXT_PUBLIC_API_KEY` (см. `frontend/src/lib/config/publicEnv.ts`).
+
+## Запуск в Docker
+
 ```bash
 docker compose -f docker-compose.dev.yml up -d
 ```
 
-После запуска контейнеров выполните миграции:
+После старта контейнеров примените миграции:
+
 ```bash
 docker exec -it backend alembic upgrade head
 ```
 
-## Запуск из терминала
-### Бэкенд
+Убедитесь, что worker Celery запущен (сервис `backend-worker` в compose).
+
+## Локальная разработка
+
+**Бэкенд**
+
 ```bash
 cd backend
+pip install -e ".[dev]"
 uvicorn src.app:app --host 0.0.0.0 --reload --port 8000
 ```
 
-### Celery
-Запустите worker Celery параллельно:
+**Worker**
+
 ```bash
 cd backend
 celery -A src.tasks.celery_app worker -l info
 ```
 
-### Фронтенд
+**Фронтенд**
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-## Открыть в браузере
-- Фронтенд: `http://localhost:3000`
-- Бэкенд: `http://localhost:8000`
-- Документация OpenAPI: `http://localhost:8000/docs`
+## Адреса
 
+- UI: [http://localhost:3000](http://localhost:3000) — дублирующий маршрут: [http://localhost:3000/test](http://localhost:3000/test)
+- OpenAPI: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-Для локальной разработки используйте `backend/DEVELOPMENT.md` и `backend/QUICKSTART.md`.
+С хоста PostgreSQL в compose доступен на порту **5433** (внутри сети контейнеров — `backend-db:5432`).
+
+Дополнительно: `backend/DEVELOPMENT.md`, `backend/QUICKSTART.md`.

@@ -61,6 +61,19 @@ pre-commit run --all-files
 - `WARNING`: предупреждения (подозрительные файлы, большие файлы)
 - `ERROR`: ошибки (файл не найден, сбой обработки)
 
+## Переменные окружения
+
+Скопируйте `.env.dev.example` в `.env.dev`:
+```bash
+cp .env.dev.example .env.dev
+```
+
+Основные переменные (их читает `src/database.py` и приложение):
+- `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_HOST`, `PGPORT` — сборка URL `postgresql+asyncpg://...` для SQLAlchemy и asyncpg
+- `REDIS_URL` — брокер и backend Celery (если не задан, в worker можно использовать `CELERY_BROKER_URL`)
+- `API_KEY` — значение заголовка `X-API-Key` для всех запросов к API
+
+Пример для Docker см. в корневом `.env.dev.example`. Образ Postgres в compose слушает порт **5432** внутри сети контейнеров; с хоста БД доступна на **5433** (маппинг `5433:5432`).
 
 ## База данных
 
@@ -83,10 +96,14 @@ celery -A src.tasks.celery_app worker -l info
 
 ## Архитектура
 
-- `app.py`: маршруты FastAPI
-- `service.py`: бизнес-логика
-- `repositories.py`: доступ к данным
+- `app.py` / `main.py`: точка входа и сборка приложения
+- `api/`: HTTP-слой (зависимости, роутеры)
+- `application/`: сценарии использования (use cases)
+- `domain/`: доменные константы
+- `infrastructure/`: репозитории, пути хранилища
+- `repositories.py`: реэкспорт репозиториев (совместимость)
 - `models.py`: ORM-модели SQLAlchemy
 - `schemas.py`: Pydantic-схемы
-- `database.py`: настройки базы данных
+- `database.py`: подключение к БД
 - `tasks.py`: задачи Celery
+- `config.py`: настройки из окружения

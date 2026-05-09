@@ -1,7 +1,3 @@
-"""
-Celery задачи для обработки файлов и сканирования угроз.
-"""
-
 import asyncio
 import os
 from pathlib import Path
@@ -9,30 +5,18 @@ from pathlib import Path
 import aiofiles
 from celery import Celery
 from loguru import logger
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
+from src.database import async_session_maker
+from src.domain.constants import MAX_UPLOAD_BYTES
+from src.infrastructure.persistence.repositories import AlertRepository, FileRepository
+from src.infrastructure.storage import stored_file_path
 from src.models import Alert
-from src.repositories import AlertRepository, FileRepository
-from src.service import STORAGE_DIR
 
-REDIS_URL = os.environ.get('REDIS_URL', 'redis://backend-redis:6379/0')
+REDIS_URL = os.environ.get('REDIS_URL', os.environ.get('CELERY_BROKER_URL', 'redis://backend-redis:6379/0'))
 
 celery_app = Celery('file_tasks', broker=REDIS_URL, backend=REDIS_URL)
 
 logger.info(f'Celery приложение инициализировано с брокером: {REDIS_URL}')
-
-
-def _get_db_session():
-    """
-    Создание фабрики сессий БД для задач Celery.
-    """
-    DB_URL = (
-        f'postgresql+asyncpg://{os.environ.get("POSTGRES_USER")}: '
-        f'{os.environ.get("POSTGRES_PASSWORD")}@{os.environ.get("POSTGRES_HOST")}:'
-        f'{os.environ.get("PGPORT")}/{os.environ.get("POSTGRES_DB")}'
-    )
-    engine = create_async_engine(DB_URL)
-    return async_sessionmaker(engine, expire_on_commit=False)
 
 
 async def _scan_file_for_threats(file_id: str) -> None:
@@ -41,8 +25,6 @@ async def _scan_file_for_threats(file_id: str) -> None:
     """
 
     logger.info(f'Начало проверки угроз для файла: {file_id}')
-    async_session_maker = _get_db_session()
-
     async with async_session_maker() as session:
         repo = FileRepository(session)
         file_item = await repo.get_file(file_id)
@@ -60,7 +42,7 @@ async def _scan_file_for_threats(file_id: str) -> None:
             logger.warning(f'Обнаружено подозрительное расширение: {extension} для файла {file_id}')
             reasons.append(f'подозрительное расширение {extension}')
 
-        if file_item.size > 10 * 1024 * 1024:
+        if file_item.size > MAX_UPLOAD_BYTES:
             logger.warning(f'Файл слишком большой: {file_item.size} байт для файла {file_id}')
             reasons.append('файл больше 10 МБ')
 
@@ -83,8 +65,6 @@ async def _extract_file_metadata(file_id: str) -> None:
     """
 
     logger.info(f'Начало извлечения метаданных для файла: {file_id}')
-    async_session_maker = _get_db_session()
-
     async with async_session_maker() as session:
         repo = FileRepository(session)
         file_item = await repo.get_file(file_id)
@@ -92,7 +72,7 @@ async def _extract_file_metadata(file_id: str) -> None:
             logger.error(f'Файл не найден для извлечения метаданных: {file_id}')
             return
 
-        stored_path = STORAGE_DIR / file_item.stored_name
+        stored_path = stored_file_path(file_item.stored_name)
         if not stored_path.exists():
             logger.error(f'Файловый объект не найден: {stored_path}')
             file_item.processing_status = 'failed'
@@ -138,8 +118,6 @@ async def _send_file_alert(file_id: str) -> None:
     """
 
     logger.info(f'Отправка алерта для файла: {file_id}')
-    async_session_maker = _get_db_session()
-
     async with async_session_maker() as session:
         repo = FileRepository(session)
         file_item = await repo.get_file(file_id)
@@ -166,8 +144,8 @@ async def _send_file_alert(file_id: str) -> None:
         logger.debug(f'Алерт создан для файла: {file_id}')
 
 
-@celery_app.task
-def scan_file_for_threats(file_id: str) -> None:
+@celery_app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 5})
+def scan_file_for_threats(self, file_id: str) -> None:
     """
     Celery задача: сканирование файла на угрозы.
     """
@@ -176,8 +154,8 @@ def scan_file_for_threats(file_id: str) -> None:
     asyncio.run(_scan_file_for_threats(file_id))
 
 
-@celery_app.task
-def extract_file_metadata(file_id: str) -> None:
+@celery_app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 5})
+def extract_file_metadata(self, file_id: str) -> None:
     """
     Celery задача: извлечение метаданных файла.
     """
@@ -186,8 +164,8 @@ def extract_file_metadata(file_id: str) -> None:
     asyncio.run(_extract_file_metadata(file_id))
 
 
-@celery_app.task
-def send_file_alert(file_id: str) -> None:
+@celery_app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 5})
+def send_file_alert(self, file_id: str) -> None:
     """
     Celery задача: отправка алерта о файле.
     """
