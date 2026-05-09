@@ -32,6 +32,18 @@ async def list_files(db: AsyncSession = Depends(get_db)) -> list[StoredFile]:
     return files
 
 
+async def list_files_paginated(skip: int = 0, limit: int = 20, db: AsyncSession = Depends(get_db)) -> tuple[list[StoredFile], int]:
+    """
+    Получение файлов с пагинацией.
+    """
+
+    logger.debug(f'Получение файлов с пагинацией skip={skip} limit={limit}')
+    repo = FileRepository(db)
+    items, total = await repo.list_files_paginated(skip=skip, limit=limit)
+    logger.debug(f'Получено файлов: {len(items)} из {total}')
+    return items, total
+
+
 async def list_alerts(db: AsyncSession = Depends(get_db)) -> list[Alert]:
     """
     Получение всех алертов.
@@ -42,6 +54,18 @@ async def list_alerts(db: AsyncSession = Depends(get_db)) -> list[Alert]:
     alerts = await repo.list_alerts()
     logger.debug(f'Получено алертов: {len(alerts)}')
     return alerts
+
+
+async def list_alerts_paginated(skip: int = 0, limit: int = 20, db: AsyncSession = Depends(get_db)) -> tuple[list[Alert], int]:
+    """
+    Получение алертов с пагинацией.
+    """
+
+    logger.debug(f'Получение алертов с пагинацией skip={skip} limit={limit}')
+    repo = AlertRepository(db)
+    items, total = await repo.list_alerts_paginated(skip=skip, limit=limit)
+    logger.debug(f'Получено алертов: {len(items)} из {total}')
+    return items, total
 
 
 async def get_file(file_id: str, db: AsyncSession = Depends(get_db)) -> StoredFile:
@@ -68,7 +92,10 @@ async def create_file(title: str, upload_file: UploadFile, db: AsyncSession = De
     if not content:
         logger.warning(f'Попытка загрузить пустой файл: \'{upload_file.filename}\'')
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File is empty")
-
+    MAX_FILE_SIZE = 10 * 1024 * 1024
+    if len(content) > MAX_FILE_SIZE:
+        logger.warning(f'Файл слишком большой: {len(content)} байт (макс: {MAX_FILE_SIZE})')
+        raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=f'File size exceeds {MAX_FILE_SIZE // (1024 * 1024)} MB limit')
     file_id = str(uuid4())
     suffix = Path(upload_file.filename or "").suffix
     stored_name = f"{file_id}{suffix}"
@@ -124,7 +151,7 @@ async def delete_file(file_id: str, db: AsyncSession = Depends(get_db)) -> None:
     stored_path = STORAGE_DIR / file_item.stored_name
     if stored_path.exists():
         logger.debug(f'Удаление файла с диска: \'{stored_path}\'')
-        stored_path.unlink()
+        await aiofiles.os.remove(str(stored_path))
     await repo.delete_file(file_item)
     logger.info(f'Файл удалён успешно: \'{file_id}\'')
 
@@ -149,25 +176,6 @@ async def create_alert(file_id: str, level: str, message: str, db: AsyncSession 
     """
 
     logger.info(f'Создание алерта для файла \'{file_id}\': [{level}] \'{message}\'')
-    alert = Alert(file_id=file_id, level=level, message=message)
-    repo = AlertRepository(db)
-    return await repo.create_alert(alert)
-
-
-async def create_alert(file_id: str, level: str, message: str, db: AsyncSession = Depends(get_db)) -> Alert:
-    """
-    Create alert for file processing.
-    
-    Args:
-        file_id: Associated file identifier.
-        level: Alert level (info, warning, critical).
-        message: Alert message.
-        db: Database session (injected).
-        
-    Returns:
-        Alert: Created alert record.
-    """
-    logger.info(f"Creating alert for file {file_id}: [{level}] {message}")
     alert = Alert(file_id=file_id, level=level, message=message)
     repo = AlertRepository(db)
     return await repo.create_alert(alert)

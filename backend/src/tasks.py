@@ -26,6 +26,7 @@ def _get_db_session():
     """
     Создание фабрики сессий БД для задач Celery.
     """
+
     DB_URL = (
         f'postgresql+asyncpg://{os.environ.get("POSTGRES_USER")}: '
         f'{os.environ.get("POSTGRES_PASSWORD")}@{os.environ.get("POSTGRES_HOST")}:'
@@ -166,8 +167,8 @@ async def _send_file_alert(file_id: str) -> None:
         logger.debug(f'Алерт создан для файла: {file_id}')
 
 
-@celery_app.task
-def scan_file_for_threats(file_id: str) -> None:
+@celery_app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 5})
+def scan_file_for_threats(self, file_id: str) -> None:
     """
     Celery задача: сканирование файла на угрозы.
     """
@@ -176,8 +177,8 @@ def scan_file_for_threats(file_id: str) -> None:
     asyncio.run(_scan_file_for_threats(file_id))
 
 
-@celery_app.task
-def extract_file_metadata(file_id: str) -> None:
+@celery_app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 5})
+def extract_file_metadata(self, file_id: str) -> None:
     """
     Celery задача: извлечение метаданных файла.
     """
@@ -186,8 +187,8 @@ def extract_file_metadata(file_id: str) -> None:
     asyncio.run(_extract_file_metadata(file_id))
 
 
-@celery_app.task
-def send_file_alert(file_id: str) -> None:
+@celery_app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 5})
+def send_file_alert(self, file_id: str) -> None:
     """
     Celery задача: отправка алерта о файле.
     """

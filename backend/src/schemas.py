@@ -48,3 +48,25 @@ class AlertItem(BaseModel):
     level: str
     message: str
     created_at: datetime
+
+
+class PaginatedFiles(BaseModel):
+    """
+    Пагинированный ответ списка файлов.
+    """
+
+    items: list[FileItem]
+    total: int
+    skip: int
+    limit: int
+
+
+class PaginatedAlerts(BaseModel):
+    """
+    Пагинированный ответ списка алертов.
+    """
+
+    items: list[AlertItem]
+    total: int
+    skip: int
+    limit: int

@@ -2,51 +2,76 @@
 Точка входа FastAPI и определение маршрутов.
 """
 
+import os
 import src  # noqa: F401 - Initialize logging configuration
-from fastapi import FastAPI, HTTPException
-from fastapi import File, Form, UploadFile
+from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi import File, Form, UploadFile, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from loguru import logger
 from starlette import status
 
-from src.schemas import AlertItem, FileItem, FileUpdate
-from src.service import create_file, delete_file, get_file, list_alerts, list_files, update_file, STORAGE_DIR
+from src.schemas import AlertItem, FileItem, FileUpdate, PaginatedAlerts, PaginatedFiles
+from src.service import (
+    create_file,
+    delete_file,
+    get_file,
+    list_alerts_paginated,
+    list_files_paginated,
+    update_file,
+    STORAGE_DIR,
+)
 from src.tasks import scan_file_for_threats
 
-app = FastAPI(title="File Manager API", version="1.0.0")
+# Получить API ключ из переменных окружения
+API_KEY = os.environ.get('API_KEY', 'test-key-dev')
+
+
+def verify_api_key(x_api_key: str = Header(None)) -> str:
+    """
+    Проверка API ключа.
+    """
+    if not x_api_key or x_api_key != API_KEY:
+        logger.warning('Попытка доступа с неправильным API ключом')
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Invalid API key')
+    return x_api_key
+
+
+app = FastAPI(title='File Manager API', version='1.0.0', dependencies=[Depends(verify_api_key)])
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
     ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=['*'],
+    allow_headers=['*'],
 )
 
 logger.info('Приложение FastAPI инициализировано')
 
 
-@app.get("/files", response_model=list[FileItem])
-async def list_files_view():
+@app.get('/files', response_model=PaginatedFiles)
+async def list_files_view(skip: int = Query(0, ge=0), limit: int = Query(20, ge=1, le=100)):
     """
-    Получение всех файлов с метаданными.
-    """
-
-    logger.debug('GET /files вызван')
-    return await list_files()
-
-
-@app.get("/alerts", response_model=list[AlertItem])
-async def list_alerts_view():
-    """
-    Получение всех алертов.
+    Получение всех файлов с пагинацией.
     """
 
-    logger.debug('GET /alerts вызван')
-    return await list_alerts()
+    logger.debug(f'GET /files вызван (skip={skip}, limit={limit})')
+    items, total = await list_files_paginated(skip=skip, limit=limit)
+    return {'items': items, 'total': total, 'skip': skip, 'limit': limit}
+
+
+@app.get('/alerts', response_model=PaginatedAlerts)
+async def list_alerts_view(skip: int = Query(0, ge=0), limit: int = Query(20, ge=1, le=100)):
+    """
+    Получение всех алертов с пагинацией.
+    """
+
+    logger.debug(f'GET /alerts вызван (skip={skip}, limit={limit})')
+    items, total = await list_alerts_paginated(skip=skip, limit=limit)
+    return {'items': items, 'total': total, 'skip': skip, 'limit': limit}
 
 
 @app.post("/files", response_model=FileItem, status_code=201)

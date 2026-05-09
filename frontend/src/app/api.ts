@@ -1,4 +1,5 @@
 const API_BASE = 'http://localhost:8000';
+const API_KEY = 'test-key-dev';
 
 export interface FileItem {
   id: string;
@@ -23,14 +24,33 @@ export interface AlertItem {
   created_at: string;
 }
 
-export async function fetchFiles(): Promise<FileItem[]> {
-  const response = await fetch(`${API_BASE}/files`, { cache: 'no-store' });
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  skip: number;
+  limit: number;
+}
+
+const getHeaders = () => ({
+  'X-API-Key': API_KEY,
+});
+
+export async function fetchFiles(skip: number = 0, limit: number = 20): Promise<PaginatedResponse<FileItem>> {
+  const params = new URLSearchParams({ skip: String(skip), limit: String(limit) });
+  const response = await fetch(`${API_BASE}/files?${params}`, {
+    cache: 'no-store',
+    headers: getHeaders(),
+  });
   if (!response.ok) throw new Error('Failed to fetch files');
   return response.json();
 }
 
-export async function fetchAlerts(): Promise<AlertItem[]> {
-  const response = await fetch(`${API_BASE}/alerts`, { cache: 'no-store' });
+export async function fetchAlerts(skip: number = 0, limit: number = 20): Promise<PaginatedResponse<AlertItem>> {
+  const params = new URLSearchParams({ skip: String(skip), limit: String(limit) });
+  const response = await fetch(`${API_BASE}/alerts?${params}`, {
+    cache: 'no-store',
+    headers: getHeaders(),
+  });
   if (!response.ok) throw new Error('Failed to fetch alerts');
   return response.json();
 }

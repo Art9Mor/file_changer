@@ -61,6 +61,19 @@ pre-commit run --all-files
 - `WARNING`: предупреждения (подозрительные файлы, большие файлы)
 - `ERROR`: ошибки (файл не найден, сбой обработки)
 
+## Переменные окружения
+
+Скопируйте `.env.dev.example` в `.env.dev`:
+```bash
+cp .env.dev.example .env.dev
+```
+
+Основные переменные:
+- `DATABASE_URL`: строка подключения к PostgreSQL (например, `postgresql+asyncpg://postgres:postgres@localhost:5432/file_changer`)
+- `REDIS_URL`: URL для подключения к Redis (например, `redis://localhost:6379`)
+- `API_KEY`: ключ для аутентификации API (по умолчанию `test-key-dev`)
+
+При использовании Docker эти переменные устанавливаются автоматически из `docker-compose.dev.yml`.
 
 ## База данных
 
