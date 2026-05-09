@@ -1,9 +1,17 @@
+"""
+Модели Pydantic для валидации запросов/ответов.
+"""
+
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
 
 class FileItem(BaseModel):
+    """
+    Схема ответа файла с метаданными.
+    """
+
     model_config = ConfigDict(from_attributes=True)
 
     id: str
@@ -21,10 +29,18 @@ class FileItem(BaseModel):
 
 
 class FileUpdate(BaseModel):
+    """
+    Схема для обновления файла.
+    """
+
     title: str
 
 
 class AlertItem(BaseModel):
+    """
+    Схема ответа алерта.
+    """
+
     model_config = ConfigDict(from_attributes=True)
 
     id: int

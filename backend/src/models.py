@@ -1,3 +1,7 @@
+"""
+Модели SQLAlchemy ORM для таблиц БД.
+"""
+
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, JSON, String, func
@@ -5,10 +9,18 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class Base(DeclarativeBase):
+    """
+    Базовый класс для всех ORM моделей.
+    """
+
     pass
 
 
 class StoredFile(Base):
+    """
+    Модель хранилища файлов.
+    """
+
     __tablename__ = "files"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
@@ -36,6 +48,10 @@ class StoredFile(Base):
 
 
 class Alert(Base):
+    """
+    Модель алертов о проблемах при обработке.
+    """
+
     __tablename__ = "alerts"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
