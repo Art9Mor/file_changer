@@ -3,6 +3,7 @@ from pathlib import Path
 from uuid import uuid4
 
 import aiofiles
+import aiofiles.os
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 

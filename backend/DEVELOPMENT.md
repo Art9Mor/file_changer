@@ -16,6 +16,16 @@ pip install -e ".[dev]"
 uvicorn src.app:app --host 0.0.0.0 --reload --port 8000
 ```
 
+## Тесты
+
+Функциональные тесты API (httpx + ASGI, SQLite в отдельном файле на прогон, без поднятого Postgres):
+
+```bash
+cd backend
+uv run pytest
+# или: pip install -e ".[dev]" && pytest
+```
+
 ## Инструменты качества кода
 
 ### Ruff (линтинг и форматирование)
