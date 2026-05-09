@@ -68,12 +68,12 @@ pre-commit run --all-files
 cp .env.dev.example .env.dev
 ```
 
-Основные переменные:
-- `DATABASE_URL`: строка подключения к PostgreSQL (например, `postgresql+asyncpg://postgres:postgres@localhost:5432/file_changer`)
-- `REDIS_URL`: URL для подключения к Redis (например, `redis://localhost:6379`)
-- `API_KEY`: ключ для аутентификации API (по умолчанию `test-key-dev`)
+Основные переменные (их читает `src/database.py` и приложение):
+- `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_HOST`, `PGPORT` — сборка URL `postgresql+asyncpg://...` для SQLAlchemy и asyncpg
+- `REDIS_URL` — брокер и backend Celery (если не задан, в worker можно использовать `CELERY_BROKER_URL`)
+- `API_KEY` — значение заголовка `X-API-Key` для всех запросов к API
 
-При использовании Docker эти переменные устанавливаются автоматически из `docker-compose.dev.yml`.
+Пример для Docker см. в корневом `.env.dev.example`. Образ Postgres в compose слушает порт **5432** внутри сети контейнеров; с хоста БД доступна на **5433** (маппинг `5433:5432`).
 
 ## База данных
 
@@ -96,10 +96,14 @@ celery -A src.tasks.celery_app worker -l info
 
 ## Архитектура
 
-- `app.py`: маршруты FastAPI
-- `service.py`: бизнес-логика
-- `repositories.py`: доступ к данным
+- `app.py` / `main.py`: точка входа и сборка приложения
+- `api/`: HTTP-слой (зависимости, роутеры)
+- `application/`: сценарии использования (use cases)
+- `domain/`: доменные константы
+- `infrastructure/`: репозитории, пути хранилища
+- `repositories.py`: реэкспорт репозиториев (совместимость)
 - `models.py`: ORM-модели SQLAlchemy
 - `schemas.py`: Pydantic-схемы
-- `database.py`: настройки базы данных
+- `database.py`: подключение к БД
 - `tasks.py`: задачи Celery
+- `config.py`: настройки из окружения

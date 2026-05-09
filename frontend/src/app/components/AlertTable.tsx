@@ -1,5 +1,5 @@
 import { Badge, Table } from 'react-bootstrap';
-import { AlertItem } from '../api';
+import type { AlertItem } from '@/lib/api/types';
 
 interface AlertTableProps {
   alerts: AlertItem[];

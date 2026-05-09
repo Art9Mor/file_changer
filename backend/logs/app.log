@@ -1,0 +1,6 @@
+2026-05-10 04:22:44 | INFO     | src.tasks:<module>:22 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-05-10 04:22:44 | INFO     | src.app:<module>:54 - Приложение FastAPI инициализировано
+2026-05-10 04:37:16 | INFO     | src.tasks:<module>:23 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-05-10 04:37:16 | INFO     | src.main:create_app:36 - Приложение FastAPI собрано (роутеры подключены)
+2026-05-10 04:42:07 | INFO     | src.tasks:<module>:19 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-05-10 04:42:07 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)

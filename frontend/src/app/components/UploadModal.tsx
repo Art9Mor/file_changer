@@ -1,6 +1,8 @@
+'use client';
+
 import { FormEvent, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { uploadFile } from '../api';
+import { uploadFile } from '@/lib/api/filesClient';
 
 interface UploadModalProps {
   show: boolean;

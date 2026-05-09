@@ -1,11 +1,3 @@
-"""
-Добавить индексы для оптимизации запросов.
-
-Revision ID: 0001
-Revises: 0d6439d2e79f
-Create Date: 2026-05-10 12:00:00.000000
-
-"""
 from typing import Sequence, Union
 
 from alembic import op

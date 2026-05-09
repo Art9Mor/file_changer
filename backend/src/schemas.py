@@ -1,7 +1,3 @@
-"""
-Модели Pydantic для валидации запросов/ответов.
-"""
-
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict

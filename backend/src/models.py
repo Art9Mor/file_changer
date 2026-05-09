@@ -1,7 +1,3 @@
-"""
-Модели SQLAlchemy ORM для таблиц БД.
-"""
-
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, JSON, String, func

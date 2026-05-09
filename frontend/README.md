@@ -46,21 +46,18 @@ npm run build
 npm start
 ```
 
-## API интеграция
+## Слои и API
 
-Файл `src/app/api.ts` содержит функции для работы с бэкендом:
+- **`src/lib/config/publicEnv.ts`** — базовый URL и ключ API (`NEXT_PUBLIC_*`)
+- **`src/lib/api/`** — типы, HTTP-заголовки, клиенты `filesClient` и `alertsClient`
+- **`src/features/file-manager/`** — хук `useFileManagerDashboard` и экран `FileManagerDashboard`
 
-- `fetchFiles()` — получить список всех файлов
-- `fetchAlerts()` — получить список всех алертов
-- `uploadFile(title, file)` — загрузить новый файл
-- `deleteFile(fileId)` — удалить файл
-- `updateFile(fileId, title)` — обновить название файла
-- `downloadFile(fileId)` — скачать файл
+Ко всем запросам добавляется заголовок `X-API-Key` (в dev по умолчанию `test-key-dev`, на проде задайте `NEXT_PUBLIC_API_KEY`).
 
 ## Компоненты
 
 ### FileTable
-Таблица с отображением загруженных файлов с действиями: скачивание, переименование, удаление.
+Таблица с отображением загруженных файлов и кнопкой скачивания (запрос с `X-API-Key`).
 
 ### AlertTable
 Таблица с алертами о проблемах при обработке файлов, цветные метки по уровню серьёзности.

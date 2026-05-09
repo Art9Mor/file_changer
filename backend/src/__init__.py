@@ -1,7 +1,3 @@
-"""
-Application package initialization and logging configuration.
-"""
-
 import sys
 from pathlib import Path
 
