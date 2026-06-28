@@ -1,5 +1,7 @@
 import pytest
 
+from src.domain.constants import MAX_UPLOAD_BYTES
+
 
 @pytest.mark.asyncio
 async def test_upload_file_success(client, api_headers):
@@ -31,7 +33,7 @@ async def test_upload_rejects_empty_file(client, api_headers):
 
 @pytest.mark.asyncio
 async def test_upload_rejects_oversized_file(client, api_headers):
-    big = b'x' * (10 * 1024 * 1024 + 1)
+    big = b'x' * (MAX_UPLOAD_BYTES + 1)
     response = await client.post(
         '/files',
         headers=api_headers,

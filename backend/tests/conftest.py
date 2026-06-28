@@ -23,7 +23,7 @@ from src.models import Base
 @pytest.fixture(autouse=True)
 def _noop_celery_scan(monkeypatch):
     monkeypatch.setattr(
-        'src.api.routers.files.scan_file_for_threats.delay',
+        'src.tasks.celery_tasks.scan_file_for_threats.delay',
         lambda *args, **kwargs: None,
     )
 
@@ -32,7 +32,7 @@ def _noop_celery_scan(monkeypatch):
 def _isolated_storage(tmp_path, monkeypatch):
     storage = tmp_path / 'storage' / 'files'
     storage.mkdir(parents=True)
-    monkeypatch.setattr('src.infrastructure.storage.STORAGE_DIR', storage)
+    monkeypatch.setattr('src.infrastructure.storage.file_storage.STORAGE_DIR', storage)
 
 
 @pytest_asyncio.fixture
@@ -64,9 +64,9 @@ async def app(test_engine):
         async with session_maker() as session:
             yield session
 
-    application.dependency_overrides[get_db] = override_get_db
+    application.dependency_overrides[get_db] = override_get_db  # type: ignore
     yield application
-    application.dependency_overrides.clear()
+    application.dependency_overrides.clear()  # type: ignore
 
 
 @pytest_asyncio.fixture

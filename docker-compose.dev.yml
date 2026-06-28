@@ -6,6 +6,9 @@ services:
     volumes:
       - ./backend:/backend
     env_file: ".env.dev"
+    working_dir: /backend
+    environment:
+      - PYTHONPATH=/backend
     ports:
       - "8000:8000"
     depends_on:
@@ -14,27 +17,36 @@ services:
 
   backend-worker:
     build: ./backend
-    command: [ 'celery', '-A', 'src.tasks.celery_app', 'worker', '-l', 'info' ]
+    command: ['celery', '-A', 'src.tasks.celery_tasks.celery_app', 'worker', '-l', 'info']
     container_name: backend-worker
     env_file: ".env.dev"
     volumes:
       - ./backend:/backend
+    working_dir: /backend
+    environment:
+      - PYTHONPATH=/backend
     depends_on:
       - backend-db
       - backend-redis
 
   backend-db:
-    image: postgres:latest
+    image: postgres:15
     container_name: backend-db
     ports:
       - "5433:5432"
     env_file: ".env.dev"
     volumes:
-      - backend-db-volume:/var/lib/postgresql
+      - backend-db-volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=file_changer
 
   backend-redis:
-    image: redis:latest
+    image: redis:7
     container_name: backend-redis
+    ports:
+      - "6379:6379"
 
   frontend:
     build:
@@ -43,6 +55,11 @@ services:
     container_name: frontend
     ports:
       - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+      - NEXT_PUBLIC_API_KEY=test-key-dev
 
 volumes:
   backend-db-volume:
