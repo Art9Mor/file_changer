@@ -1,6 +1,7 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
+
 @pytest.mark.asyncio
 async def test_files_forbidden_without_api_key(app):
     transport = ASGITransport(app=app)

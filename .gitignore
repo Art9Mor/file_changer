@@ -12,3 +12,5 @@ wheels/
 **/.DS_Store
 backend/storage/*
 .env.dev
+backend/logs
+backend/.venv

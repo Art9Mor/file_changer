@@ -184,3 +184,85 @@
 2026-05-10 04:51:51 | WARNING  | src.application.files:create_file:72 - Файл слишком большой: 10485761 байт (макс: 10485760)
 2026-05-10 04:51:51 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
 2026-05-10 04:51:51 | WARNING  | src.api.deps:verify_api_key:14 - Попытка доступа с неправильным API ключом
+2026-06-28 19:23:28 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | WARNING  | src.api.deps:verify_api_key:14 - Попытка доступа с неправильным API ключом
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | WARNING  | src.api.deps:verify_api_key:14 - Попытка доступа с неправильным API ключом
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | INFO     | src.api.routers.files:create_file_view:49 - POST /files: загрузка 'listed.txt' с названием 'В каталоге'
+2026-06-28 19:23:28 | INFO     | src.application.services.file_service:create_file:58 - Загрузка файла: 'listed.txt' (название: 'В каталоге')
+2026-06-28 19:23:28 | INFO     | src.application.services.file_service:create_file:92 - Файл создан успешно: 'bf416809-9568-4c6d-a44f-55adab6baac4' (2 байт)
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | INFO     | src.api.routers.files:create_file_view:49 - POST /files: загрузка 'one.txt' с названием 'Один'
+2026-06-28 19:23:28 | INFO     | src.application.services.file_service:create_file:58 - Загрузка файла: 'one.txt' (название: 'Один')
+2026-06-28 19:23:28 | INFO     | src.application.services.file_service:create_file:92 - Файл создан успешно: '179b305c-926d-47a7-b63f-959dc8112a27' (4 байт)
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | WARNING  | src.application.services.file_service:get_file:42 - Файл не найден: 00000000-0000-0000-0000-000000000000
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | INFO     | src.api.routers.files:create_file_view:49 - POST /files: загрузка 'f.txt' с названием 'Старое'
+2026-06-28 19:23:28 | INFO     | src.application.services.file_service:create_file:58 - Загрузка файла: 'f.txt' (название: 'Старое')
+2026-06-28 19:23:28 | INFO     | src.application.services.file_service:create_file:92 - Файл создан успешно: '8c63fb42-f6a6-4d3f-b702-67c07f2d540b' (1 байт)
+2026-06-28 19:23:28 | INFO     | src.application.services.file_service:update_file:109 - Файл обновлён: '8c63fb42-f6a6-4d3f-b702-67c07f2d540b'
+2026-06-28 19:23:28 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:28 | INFO     | src.api.routers.files:create_file_view:49 - POST /files: загрузка 'payload.bin' с названием 'Скачать'
+2026-06-28 19:23:28 | INFO     | src.application.services.file_service:create_file:58 - Загрузка файла: 'payload.bin' (название: 'Скачать')
+2026-06-28 19:23:28 | INFO     | src.application.services.file_service:create_file:92 - Файл создан успешно: 'b48f4b39-a67e-454d-9e09-a1158e16c852' (3 байт)
+2026-06-28 19:23:28 | INFO     | src.api.routers.files:download_file:111 - GET /files/b48f4b39-a67e-454d-9e09-a1158e16c852/download: запрос скачивания
+2026-06-28 19:23:29 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:29 | INFO     | src.api.routers.files:create_file_view:49 - POST /files: загрузка 'del.txt' с названием 'Удалить'
+2026-06-28 19:23:29 | INFO     | src.application.services.file_service:create_file:58 - Загрузка файла: 'del.txt' (название: 'Удалить')
+2026-06-28 19:23:29 | INFO     | src.application.services.file_service:create_file:92 - Файл создан успешно: '402c794b-4a4e-4da0-b295-c11acd544a32' (1 байт)
+2026-06-28 19:23:29 | WARNING  | src.api.routers.files:delete_file_view:132 - DELETE /files/402c794b-4a4e-4da0-b295-c11acd544a32: запрос на удаление
+2026-06-28 19:23:29 | INFO     | src.application.services.file_service:delete_file:116 - Удаление файла: '402c794b-4a4e-4da0-b295-c11acd544a32'
+2026-06-28 19:23:29 | INFO     | src.application.services.file_service:delete_file:124 - Файл удалён успешно: '402c794b-4a4e-4da0-b295-c11acd544a32'
+2026-06-28 19:23:29 | WARNING  | src.application.services.file_service:get_file:42 - Файл не найден: 402c794b-4a4e-4da0-b295-c11acd544a32
+2026-06-28 19:23:29 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:29 | INFO     | src.api.routers.files:create_file_view:49 - POST /files: загрузка 'hello.txt' с названием 'Документ'
+2026-06-28 19:23:29 | INFO     | src.application.services.file_service:create_file:58 - Загрузка файла: 'hello.txt' (название: 'Документ')
+2026-06-28 19:23:29 | INFO     | src.application.services.file_service:create_file:92 - Файл создан успешно: '8f5b8454-212f-4cfc-921e-1bf1d8df409f' (11 байт)
+2026-06-28 19:23:29 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:29 | INFO     | src.api.routers.files:create_file_view:49 - POST /files: загрузка 'empty.txt' с названием 'Пустой'
+2026-06-28 19:23:29 | INFO     | src.application.services.file_service:create_file:58 - Загрузка файла: 'empty.txt' (название: 'Пустой')
+2026-06-28 19:23:29 | WARNING  | src.application.services.file_service:create_file:60 - Попытка загрузить пустой файл: 'empty.txt'
+2026-06-28 19:23:29 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:29 | INFO     | src.api.routers.files:create_file_view:49 - POST /files: загрузка 'big.bin' с названием 'Большой'
+2026-06-28 19:23:29 | INFO     | src.application.services.file_service:create_file:58 - Загрузка файла: 'big.bin' (название: 'Большой')
+2026-06-28 19:23:29 | WARNING  | src.application.services.file_service:create_file:63 - Файл слишком большой: 10485761 байт (макс: 10485760)
+2026-06-28 19:23:29 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:23:29 | WARNING  | src.api.deps:verify_api_key:14 - Попытка доступа с неправильным API ключом
+2026-06-28 19:44:30 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 19:44:30 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 19:44:31 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 19:44:31 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 13:58:59 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 13:59:00 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 13:59:00 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 13:59:07 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 13:59:07 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 14:06:43 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 14:06:43 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 14:06:43 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 14:06:49 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 14:06:49 | INFO     | src.main:create_app:32 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 14:14:02 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 14:14:02 | INFO     | src.main:create_app:33 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 14:14:23 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 14:14:23 | INFO     | src.main:create_app:33 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 14:14:27 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 14:14:27 | INFO     | src.main:create_app:33 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 14:19:26 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 14:19:26 | INFO     | src.main:create_app:33 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 14:19:30 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 14:19:30 | INFO     | src.main:create_app:33 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 14:30:33 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 14:30:33 | INFO     | src.main:create_app:33 - Приложение FastAPI собрано (роутеры подключены)
+2026-06-28 14:30:37 | INFO     | src.tasks.celery_tasks:<module>:15 - Celery приложение инициализировано с брокером: redis://backend-redis:6379/0
+2026-06-28 14:30:37 | INFO     | src.main:create_app:33 - Приложение FastAPI собрано (роутеры подключены)

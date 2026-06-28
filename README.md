@@ -22,7 +22,7 @@ cp .env.dev.example .env.dev
 ## Запуск в Docker
 
 ```bash
-docker compose -f docker-compose.dev.yml up -d
+docker compose -f docker-compose.dev.yml up -d build
 ```
 
 После старта контейнеров примените миграции:

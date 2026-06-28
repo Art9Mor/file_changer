@@ -4,13 +4,20 @@ from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.application import files as file_cases
 from src.application.exceptions import EmptyFileError, FileTooLargeError, ResourceNotFound
+from src.application.services.file_service import FileService
 from src.database import get_db
 from src.schemas import FileItem, FileUpdate, PaginatedFiles
-from src.tasks import scan_file_for_threats
+from src.tasks.celery_tasks import scan_file_for_threats
 
 router = APIRouter(prefix='/files', tags=['files'])
+
+
+def get_file_service() -> FileService:
+    """
+    Получение экземпляра сервиса файлов.
+    """
+    return FileService()
 
 
 @router.get('', response_model=PaginatedFiles)
@@ -24,7 +31,8 @@ async def list_files_view(
     """
 
     logger.debug(f'GET /files вызван (skip={skip}, limit={limit})')
-    items, total = await file_cases.list_files_paginated(skip=skip, limit=limit, db=db)
+    service = get_file_service()
+    items, total = await service.list_files_paginated(skip, limit, db)
     return {'items': items, 'total': total, 'skip': skip, 'limit': limit}
 
 
@@ -40,8 +48,9 @@ async def create_file_view(
 
     logger.info(f'POST /files: загрузка \'{file.filename}\' с названием \'{title}\'')
     content = await file.read()
+    service = get_file_service()
     try:
-        file_item = await file_cases.create_file(
+        file_item = await service.create_file(
             db,
             title=title,
             original_filename=file.filename,
@@ -68,8 +77,9 @@ async def get_file_view(file_id: str, db: AsyncSession = Depends(get_db)):
     """
 
     logger.debug(f'GET /files/{file_id} вызван')
+    service = get_file_service()
     try:
-        return await file_cases.get_file(file_id, db)
+        return await service.get_file(file_id, db)
     except ResourceNotFound:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='File not found') from None
 
@@ -85,8 +95,9 @@ async def update_file_view(
     """
 
     logger.debug(f'PATCH /files/{file_id}: обновление названия на \'{payload.title}\'')
+    service = get_file_service()
     try:
-        return await file_cases.update_file(file_id=file_id, title=payload.title, db=db)
+        return await service.update_file(file_id, payload.title, db)
     except ResourceNotFound:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='File not found') from None
 
@@ -98,8 +109,9 @@ async def download_file(file_id: str, db: AsyncSession = Depends(get_db)):
     """
 
     logger.info(f'GET /files/{file_id}/download: запрос скачивания')
+    service = get_file_service()
     try:
-        file_item, stored_path = await file_cases.get_file_for_download(file_id, db)
+        file_item, stored_path = await service.get_file_for_download(file_id, db)
     except ResourceNotFound as exc:
         detail = 'Stored file not found' if exc.resource == 'stored_blob' else 'File not found'
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=detail) from None
@@ -118,7 +130,8 @@ async def delete_file_view(file_id: str, db: AsyncSession = Depends(get_db)):
     """
 
     logger.warning(f'DELETE /files/{file_id}: запрос на удаление')
+    service = get_file_service()
     try:
-        await file_cases.delete_file(file_id, db)
+        await service.delete_file(file_id, db)
     except ResourceNotFound:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='File not found') from None
